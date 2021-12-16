@@ -1,0 +1,20 @@
+{
+  "name": "keyworm",
+  "version": "0.0.1",
+  "description": "keyword mention 크롤러",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/1571min/keyworm.git"
+  },
+  "author": "lee min taek",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/1571min/keyworm/issues"
+  },
+  "homepage": "https://github.com/1571min/keyworm#readme"
+}
