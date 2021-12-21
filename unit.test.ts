@@ -1,10 +1,13 @@
-import { ArticleFactory, isAccessible, PLATFORM_CODE, search } from './index'
+import md5 from 'md5'
+import { ArticleFactory, isAccessible, PLATFORM_CODE, ResourceInterface, search } from './index'
 
 describe('unit test', () => {
   it('article generate hash', () => {
-    const article = ArticleFactory.createArticle('test', { type: 'URL', URL: 'test' }, 'test-title')
-    const fakeContentHash = ''
-    const fakeResourceHash = ''
+    const fakeResource = { type: 'URL', url: 'test' } as ResourceInterface
+    const fakeTitle = 'fake title'
+    const article = ArticleFactory.createArticle('test', fakeResource, fakeTitle)
+    const fakeContentHash = md5(fakeTitle)
+    const fakeResourceHash = md5(Object.values(fakeResource).join(''))
     expect(article.hash.content).toBe(fakeContentHash)
     expect(article.hash.resource).toBe(fakeResourceHash)
   })

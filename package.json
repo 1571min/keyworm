@@ -20,11 +20,15 @@
   "homepage": "https://github.com/1571min/keyworm#readme",
   "dependencies": {
     "@types/axios": "^0.14.0",
+    "@types/md5": "^2.3.1",
     "@types/qs": "^6.9.7",
+    "@types/uuid": "^8.3.3",
     "@types/xmldom": "^0.1.31",
     "axios": "^0.24.0",
+    "md5": "^2.3.0",
     "qs": "^6.10.2",
-    "ts-jest": "^27.1.2"
+    "ts-jest": "^27.1.2",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/jest": "^27.0.3",
