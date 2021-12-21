@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "jest -e"
   },
   "repository": {
     "type": "git",
@@ -16,5 +17,40 @@
   "bugs": {
     "url": "https://github.com/1571min/keyworm/issues"
   },
-  "homepage": "https://github.com/1571min/keyworm#readme"
+  "homepage": "https://github.com/1571min/keyworm#readme",
+  "dependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/qs": "^6.9.7",
+    "@types/xmldom": "^0.1.31",
+    "axios": "^0.24.0",
+    "qs": "^6.10.2",
+    "ts-jest": "^27.1.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.0.3",
+    "@typescript-eslint/eslint-plugin": "^4.28.2",
+    "@typescript-eslint/parser": "^4.28.2",
+    "eslint": "^7.30.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "jest": "^27.0.6",
+    "prettier": "^2.3.2"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "",
+    "testRegex": ".*\\.test\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  }
 }
