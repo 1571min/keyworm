@@ -1,8 +1,23 @@
-import { PLAFORM_CODE, Platform, PlatformFactory } from './plaform'
+import { PLATFORM_CODE, Platform, PlatformFactory } from './platform'
 
 describe('[Unit] Platform', () => {
-  it('PlatformFactory generate plaform', () => {
-    const naver = PlatformFactory.generatePlatform(PLAFORM_CODE.NAVER)
+  const fakeKeyword = '모두의 주차장'
+  beforeEach((): void => {
+    jest.setTimeout(60000)
+  })
+  it('PlatformFactory generate platform Naver', () => {
+    const naver = PlatformFactory.generatePlatform(PLATFORM_CODE.NAVER)
     expect(naver instanceof Platform).toBe(true)
+  })
+
+  it('PlatformFactory generate platform Google', () => {
+    const google = PlatformFactory.generatePlatform(PLATFORM_CODE.GOOGLE)
+    expect(google instanceof Platform).toBe(true)
+  })
+
+  it('Platform Naver collect articles', async () => {
+    const naver = PlatformFactory.generatePlatform(PLATFORM_CODE.NAVER)
+    const articles = await naver.collect(fakeKeyword, 10)
+    expect(articles.length).toBeGreaterThanOrEqual(5)
   })
 })

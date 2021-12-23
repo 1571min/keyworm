@@ -1,4 +1,3 @@
-import md5 from 'md5'
 import { Article } from './article'
 describe('[Unit] Article', () => {
   const keyword1 = 'keyworm'

@@ -20,7 +20,6 @@ const getHash = (obj: any) => {
   delete cpy.hash
   try {
     const js = JSON.stringify(cpy)
-    console.log(js)
     return md5(js)
   } catch (e) {
     return ''

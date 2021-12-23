@@ -59,7 +59,7 @@ const keyworm = require('keyworm')
 __Params__ 
 * keyword: `string`,
 * platformCode: `string` (default all platform),
-* term: `string` (default last 1 hours)
+* termDays: `string` (default last 1 day)
 
 __Returns__ 
 * `article[]`
@@ -68,24 +68,9 @@ __Example__
 ```js
 keyworm.search({
     keyword: 'apple',
-    platform: 'naver',
-    term: '1h'
+    platform: PLATFORM_CODE.NAVER,
+    termDays: 1
 })
-```
-</br>
-
-
-`keyword.isAccessible`
-
-__Params__ 
-* platform: `string` (default all platform),
-
-__Returns__ 
-* `boolean`
-
-__Example__
-```js
-keyworm.isAccessible('naver')
 ```
 </br>
 
