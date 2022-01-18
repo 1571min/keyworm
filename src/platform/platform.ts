@@ -18,27 +18,39 @@ export class Platform implements PlatformInterface {
 }
 
 class Naver extends Platform {
+  createDateFormat(separator = '', ...args: number[]) {
+    return `${args[0]}${separator}${('00' + args[1].toString()).slice(
+      -2
+    )}${separator}${('00' + args[2].toString()).slice(-2)}`
+  }
   async collect(keyword: string, termDays: number) {
     const now = new Date()
     const yesterday = new Date(new Date().setDate(now.getDate() - termDays))
     const dayEnd = [now.getFullYear(), now.getMonth() + 1, now.getDate()]
-    const dayStart = [yesterday.getFullYear(), yesterday.getMonth() + 1, yesterday.getDate()]
+    const dayStart = [
+      yesterday.getFullYear(),
+      yesterday.getMonth() + 1,
+      yesterday.getDate()
+    ]
     let resultArticles: Article[] = []
-    for (let startPage = 1; startPage < 9999; startPage += 10) {
-      const rowArticles = await axios.get(
-        `https://search.naver.com/search.naver?${qs.stringify({
-          de: dayEnd.join('.'),
-          ds: dayStart.join('.'),
-          where: 'news',
-          query: `"${keyword}"`,
-          nso: `so:dd,p:from${dayStart.join('')}to${dayEnd.join('')}`,
-          sm: 'tab_opt',
-          sort: 1,
-          field: 0,
-          start: startPage,
-          pd: 3
-        })}`
-      )
+    for (let startPage = 1; startPage < 4000; startPage += 10) {
+      const url = `https://search.naver.com/search.naver?${qs.stringify({
+        de: this.createDateFormat('.', ...dayEnd),
+        ds: this.createDateFormat('.', ...dayStart),
+        where: 'news',
+        query: `"${keyword}"`,
+        nso: `so:r,p:from${this.createDateFormat(
+          '',
+          ...dayStart
+        )}to${this.createDateFormat('', ...dayEnd)}`,
+        sm: 'tab_opt',
+        sort: 0,
+        field: 0,
+        start: startPage,
+        pd: 3
+      })}`
+
+      const rowArticles = await axios.get(url)
       const $ = cheerioModule.load(rowArticles.data)
       const collectedArticles: Article[] = []
       $('.news_tit')
@@ -50,8 +62,8 @@ class Naver extends Platform {
           collectedArticles.push(article)
         })
         .toArray()
-      if (collectedArticles.length === 0) break
       resultArticles = resultArticles.concat(collectedArticles)
+      if (collectedArticles.length <= 1) break
     }
 
     return resultArticles

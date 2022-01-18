@@ -2,9 +2,7 @@ import { PLATFORM_CODE, Platform, PlatformFactory } from './platform'
 
 describe('[Unit] Platform', () => {
   const fakeKeyword = '모두의 주차장'
-  beforeEach((): void => {
-    jest.setTimeout(60000)
-  })
+
   it('PlatformFactory generate platform Naver', () => {
     const naver = PlatformFactory.generatePlatform(PLATFORM_CODE.NAVER)
     expect(naver instanceof Platform).toBe(true)
@@ -18,6 +16,6 @@ describe('[Unit] Platform', () => {
   it('Platform Naver collect articles', async () => {
     const naver = PlatformFactory.generatePlatform(PLATFORM_CODE.NAVER)
     const articles = await naver.collect(fakeKeyword, 10)
-    expect(articles.length).toBeGreaterThanOrEqual(5)
-  })
+    expect(articles.length).toBeGreaterThanOrEqual(1)
+  }, 60000)
 })
