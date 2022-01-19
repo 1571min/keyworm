@@ -8,16 +8,17 @@ export enum PLATFORM_CODE {
   GOOGLE = 'GOOGLE'
 }
 
-interface PlatformInterface {
+export interface PlatformInterface {
   collect(keyword: string, termDays: number): Promise<Article[]>
 }
+
 export class Platform implements PlatformInterface {
   async collect(keyword: string, termDays: number) {
     return [new Article()]
   }
 }
 
-class Naver extends Platform {
+export class Naver extends Platform {
   createDateFormat(separator = '', ...args: number[]) {
     return `${args[0]}${separator}${('00' + args[1].toString()).slice(
       -2
@@ -70,7 +71,8 @@ class Naver extends Platform {
   }
 }
 
-class Google extends Platform {}
+export class Google extends Platform {}
+
 export class PlatformFactory {
   static generatePlatform = (platformCode: PLATFORM_CODE) => {
     if (platformCode === PLATFORM_CODE.NAVER) {

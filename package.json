@@ -2,8 +2,8 @@
   "name": "keyworm",
   "version": "0.0.1",
   "description": "keyword mention 크롤러",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "jest -e"
