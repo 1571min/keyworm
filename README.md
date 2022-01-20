@@ -24,17 +24,17 @@ const t = {
   palaformCode: 'NAVER',
 
   // 수집한 article의 키워드
-  keyword: '모두의 주차장',
+  keyword: '삼성전자',
 
   // article 출처
   resource: {
     type: 'url',
-    url: 'https://biz.chosun.com/it-science/ict/2021/12/14/RFR6HKPGLBGBRCSKEZ7SGV5M3Y/?utm_source=naver&amp;utm_medium=original&amp;utm_campaign=biz'
+    url: '기사 원문 URL'
   },
 
   // article 내용
   contents: {
-    title: '주차장’으로 옮겨간 모빌리티 전쟁… 카카오·티맵·쏘카 삼파전'
+    title: '기사 제목 타이틀'
   },
 
   // 수집한 당시에 article의 hash

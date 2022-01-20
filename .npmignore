@@ -2,3 +2,5 @@
 .idea
 .eslintrc.js
 .prettierrc
+/src/*.test.js
+/test
