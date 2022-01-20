@@ -1,6 +1,6 @@
 ## KEYWORM
 ---
-> 키워드가 들어간 컨텐츠를 크롤링 해주는 어플리케이션
+> 키워드가 들어간 컨텐츠
 
 * ...
 
@@ -8,7 +8,7 @@
 ```js
 const keyworm = require('keyworm')
 
-const articles = keyworm.search('google', '')
+const articles = await keyworm.search('NAVER', '')
 
 // => using articles
 console.log(articles)
@@ -66,11 +66,29 @@ __Returns__
 
 __Example__
 ```js
-keyworm.search({
-    keyword: 'apple',
-    platform: PLATFORM_CODE.NAVER,
-    termDays: 1
-})
+(async () => {
+    const keyworm = require('keyworm')
+    const result = await keyworm.search('쿠팡','NAVER', 1)
+    console.log(result)
+})()
+
+/*
+[
+  Article {
+    hash: '6d813453a2f2e1c22310d649e74cec72',
+    keyword: '쿠팡',
+    resource: {
+      url: 'https://www.hankyung.com/economy/article/2022012032891',
+      hash: 'a13b3c3fceae23afcdbd98c2fa862817'
+    },
+    content: {
+      title: "SPC삼립 '제빵왕' 넘어 종합푸드社 도전",
+      hash: '3e4c4d9284b31dc011ec9e5030bdb9cc'
+    }
+  }, ...
+]
+*/
+
 ```
 </br>
 

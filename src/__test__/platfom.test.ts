@@ -1,4 +1,4 @@
-import { PLATFORM_CODE, Platform, PlatformFactory } from './platform'
+import { PLATFORM_CODE, Platform, PlatformFactory } from '../platform'
 
 describe('[Unit] Platform', () => {
   const fakeKeyword = '모두의 주차장'

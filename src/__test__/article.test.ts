@@ -1,4 +1,4 @@
-import { Article } from './article'
+import { Article } from '../article'
 describe('[Unit] Article', () => {
   const keyword1 = 'keyworm'
   const keyword2 = 'keywormaaaaaa'
@@ -12,11 +12,11 @@ describe('[Unit] Article', () => {
   it('Article keyword', () => {
     article.setKeyword(keyword1)
     expect(article.keyword).toBe(keyword1)
-    expect(article.hash).toBe('230894EB0D443AC5DABAAFE19FD6AD34'.toLowerCase())
+    expect(article.hash).toBe('487ED9F1804A44563BFC97A0E2CBF3C4'.toLowerCase())
 
     article.setKeyword(keyword2)
     expect(article.keyword).toBe(keyword2)
-    expect(article.hash).toBe('60E0B540EACE8F9BF840AC2C82217E1E'.toLowerCase())
+    expect(article.hash).toBe('99E2978A31FD92616D85E456A81A2A94'.toLowerCase())
   })
 
   it('Article Resource', () => {

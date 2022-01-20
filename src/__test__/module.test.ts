@@ -1,4 +1,5 @@
-import { search, PLATFORM_CODE } from '../src'
+import { search } from '..'
+import { PLATFORM_CODE } from '../platform'
 
 describe('search', () => {
   it('naver', async () => {

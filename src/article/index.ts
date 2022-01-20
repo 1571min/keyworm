@@ -1,4 +1,5 @@
 import md5 from 'md5'
+import { PLATFORM_CODE } from '../platform'
 
 export interface ResourceInterface {
   url: string
@@ -20,6 +21,7 @@ const getHash = (obj: any) => {
   delete cpy.hash
   try {
     const js = JSON.stringify(cpy)
+    console.log(js)
     return md5(js)
   } catch (e) {
     return ''
@@ -28,11 +30,13 @@ const getHash = (obj: any) => {
 
 export class Article {
   hash: string
+  platformCode: PLATFORM_CODE
   keyword: string
   resource: ResourceInterface
   content: ContentInterface
 
-  constructor() {
+  constructor(platformCode: PLATFORM_CODE = PLATFORM_CODE.ALL) {
+    this.platformCode = platformCode
     this.hash = ''
     this.keyword = ''
     this.resource = { url: '', hash: '' }

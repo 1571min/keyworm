@@ -1,11 +1,12 @@
 import axios from 'axios'
 import cheerioModule from 'cheerio'
 import qs from 'qs'
-import { Article } from '../article/article'
+import { Article } from '../article'
 
 export enum PLATFORM_CODE {
   NAVER = 'NAVER',
-  GOOGLE = 'GOOGLE'
+  GOOGLE = 'GOOGLE',
+  ALL = 'ALL'
 }
 
 export interface PlatformInterface {
@@ -56,7 +57,7 @@ export class Naver extends Platform {
       const collectedArticles: Article[] = []
       $('.news_tit')
         .each((i, el) => {
-          const article = new Article()
+          const article = new Article(PLATFORM_CODE.NAVER)
           article.setContent($(el).text())
           article.setKeyword(keyword)
           article.setResource($(el).attr('href') ?? '')
