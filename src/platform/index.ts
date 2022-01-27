@@ -5,6 +5,7 @@ import { Article } from '../article'
 
 export enum PLATFORM_CODE {
   NAVER_NEWS = 'NAVER_NEWS',
+  NAVER_VIEW = 'NAVER_VIEW',
   GOOGLE = 'GOOGLE',
   ALL = 'ALL'
 }
@@ -72,6 +73,53 @@ export class NaverNews extends Platform {
   }
 }
 
+export class NaverView extends Platform {
+  createDateFormat(separator = '', ...args: number[]) {
+    return `${args[0]}${separator}${('00' + args[1].toString()).slice(
+      -2
+    )}${separator}${('00' + args[2].toString()).slice(-2)}`
+  }
+  async collect(keyword: string, termDays: number) {
+    const now = new Date()
+    const yesterday = new Date(new Date().setDate(now.getDate() - termDays))
+    const dayEnd = [now.getFullYear(), now.getMonth() + 1, now.getDate()]
+    const dayStart = [
+      yesterday.getFullYear(),
+      yesterday.getMonth() + 1,
+      yesterday.getDate()
+    ]
+    let resultArticles: Article[] = []
+    const url = `https://search.naver.com/search.naver?${qs.stringify({
+      mode: 'normal',
+      where: 'view',
+      query: `"${keyword}"`,
+      nso: `so:dd,p::from${this.createDateFormat(
+        '',
+        ...dayStart
+      )}to${this.createDateFormat('', ...dayEnd)}`
+    })}`
+
+    const rowArticles = await axios.get(url)
+    const $ = cheerioModule.load(rowArticles.data)
+    const collectedArticles: Article[] = []
+    $('.api_txt_lines')
+      .each((i, el) => {
+        const href = $(el).attr('href')
+        if (href) {
+          const article = new Article(PLATFORM_CODE.NAVER_NEWS)
+          article.setContent($(el).text())
+          article.setKeyword(keyword)
+          article.setResource(href)
+          collectedArticles.push(article)
+        }
+      })
+      .toArray()
+    resultArticles = resultArticles.concat(collectedArticles)
+
+    return resultArticles
+  }
+}
+
 export class Google extends Platform {}
 
 export class PlatformFactory {
@@ -80,8 +128,10 @@ export class PlatformFactory {
       return new NaverNews()
     } else if (platformCode === PLATFORM_CODE.GOOGLE) {
       return new Google()
+    } else if (platformCode === PLATFORM_CODE.NAVER_VIEW) {
+      return new NaverView()
     } else {
-      return new Platform()
+      return undefined
     }
   }
 }
