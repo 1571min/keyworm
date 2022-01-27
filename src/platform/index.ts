@@ -4,7 +4,7 @@ import qs from 'qs'
 import { Article } from '../article'
 
 export enum PLATFORM_CODE {
-  NAVER = 'NAVER',
+  NAVER_NEWS = 'NAVER_NEWS',
   GOOGLE = 'GOOGLE',
   ALL = 'ALL'
 }
@@ -19,7 +19,7 @@ export class Platform implements PlatformInterface {
   }
 }
 
-export class Naver extends Platform {
+export class NaverNews extends Platform {
   createDateFormat(separator = '', ...args: number[]) {
     return `${args[0]}${separator}${('00' + args[1].toString()).slice(
       -2
@@ -57,7 +57,7 @@ export class Naver extends Platform {
       const collectedArticles: Article[] = []
       $('.news_tit')
         .each((i, el) => {
-          const article = new Article(PLATFORM_CODE.NAVER)
+          const article = new Article(PLATFORM_CODE.NAVER_NEWS)
           article.setContent($(el).text())
           article.setKeyword(keyword)
           article.setResource($(el).attr('href') ?? '')
@@ -76,8 +76,8 @@ export class Google extends Platform {}
 
 export class PlatformFactory {
   static generatePlatform = (platformCode: PLATFORM_CODE) => {
-    if (platformCode === PLATFORM_CODE.NAVER) {
-      return new Naver()
+    if (platformCode === PLATFORM_CODE.NAVER_NEWS) {
+      return new NaverNews()
     } else if (platformCode === PLATFORM_CODE.GOOGLE) {
       return new Google()
     } else {

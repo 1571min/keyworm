@@ -1,12 +1,12 @@
 ## KEYWORM
 ---
-> 키워드가 들어간 기사를 수집하여 제공합니다. 
+> 키워드가 들어간 컨텐츠를 수집하여 제공합니다. 
 
 ## Usage
 ```js
 const keyworm = require('keyworm')
 
-const articles = await keyworm.search('NAVER', '')
+const articles = await keyworm.search('NAVER_NEWS','쿠팡' 1)
 
 // => using articles
 console.log(articles)
@@ -50,9 +50,10 @@ const keyworm = require('keyworm')
 `keyworm.search()`
 
 __Params__ 
-* keyword: `string`,
-* platformCode: `string` (default all platform) (현재 NAVER 만 지원),
-* termDays: `string` (default last 1 day)
+* platformCode: `string` (optional | default NAVER_NEWS)
+  * 현재 네이버 뉴스만 지원
+* keyword: `string`, (required)
+* termDays: `string` (optional | default last 1 day)
 
 __Returns__ 
 * `Promise<Article[]>`
@@ -61,7 +62,7 @@ __Example__
 ```js
 (async () => {
     const keyworm = require('keyworm')
-    const result = await keyworm.search('쿠팡','NAVER', 1)
+    const result = await keyworm.search('NAVER_NEWS', '쿠팡', 1)
     console.log(result)
 })()
 
@@ -85,10 +86,20 @@ __Example__
 ```
 </br>
 
+##추후 지원 플랫폼
+
+|**포털사이트**|**컨텐츠**|**지원 유무**|
+|:-------:|:-----:|:-------:|
+| Naver | news | o |
+| Naver | view | x |
+| Naver | cafe | x |
+| Google | news | x |
+| Daum | news | x |
+| Daum | blog | x |
+| Daum | bruch | x |
+
+
 ---------------------------------
 
-* 추후 추가 구현
-    * news 페이지 이외에 서비스에서 조회 가능하도록 옵션 추가
-    * resource 내부 내용을 parsing 해서 제공
-* 참조 깃헙
-    * https://github.com/dylang/shortid
+### 추후 추가 구현
+* 컨텐츠 내부 내용 제공
