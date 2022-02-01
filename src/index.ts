@@ -1,17 +1,20 @@
 import { Article } from './article'
 import { NaverNews, NaverView, PLATFORM_CODE } from './platform'
 
+class SearchOption {
+  platform = PLATFORM_CODE.NAVER_NEWS
+  keyword = ''
+  termDay = 1
+}
 export const search = async (
-  platform: PLATFORM_CODE = PLATFORM_CODE.NAVER_NEWS,
-  keyword: string,
-  termDays = 1
+  searchOption: SearchOption
 ): Promise<Article[]> => {
-  if (platform === PLATFORM_CODE.NAVER_NEWS) {
+  if (searchOption.platform === PLATFORM_CODE.NAVER_NEWS) {
     const naverNews = new NaverNews()
-    return await naverNews.collect(keyword, termDays)
-  } else if (platform === PLATFORM_CODE.NAVER_VIEW) {
+    return await naverNews.collect(searchOption.keyword, searchOption.termDay)
+  } else if (searchOption.platform === PLATFORM_CODE.NAVER_VIEW) {
     const naverView = new NaverView()
-    return await naverView.collect(keyword, termDays)
+    return await naverView.collect(searchOption.keyword, searchOption.termDay)
   }
   throw new Error('지원하지 않는 플랫폼입니다.')
 }

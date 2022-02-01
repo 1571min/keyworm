@@ -6,7 +6,11 @@
 ```js
 const keyworm = require('keyworm')
 
-const articles = await keyworm.search('NAVER_NEWS','쿠팡' 1)
+const articles = await keyworm.search({ 
+  platform: 'NAVER_NEWS',
+  keyword: '쿠팡',
+  termDay: 1 
+})
 
 // => using articles
 console.log(articles)
@@ -19,7 +23,7 @@ const article = {
   hash: 'a13b3c3fceae23afcdbd98c2fa862817'
 
   // 수집한 플랫폼 
-  palaformCode: 'NAVER',
+  palaformCode: 'NAVER_NEWS',
 
   // 수집한 article의 키워드
   keyword: '삼성전자',
@@ -47,13 +51,20 @@ const keyworm = require('keyworm')
 </br>
 
 
-`keyworm.search()`
+## keyworm.search()
 
-__Params__ 
-* platformCode: `string` (optional | default NAVER_NEWS)
-  * 현재 네이버 뉴스만 지원
-* keyword: `string`, (required)
-* termDays: `string` (optional | default last 1 day)
+`search option`
+```js
+{
+  platform : 'NAVER_NEWS', // default
+  
+  // 컨텐츠를 수집 할 때 사용하는 검색어를 의미합니다.
+  keyword : '쿠팡',
+  
+  // 컨텐츠 작성 기간에 대한 옵셥입니다
+  termDay : 1 // default
+}
+```
 
 __Returns__ 
 * `Promise<Article[]>`
@@ -62,7 +73,11 @@ __Example__
 ```js
 (async () => {
     const keyworm = require('keyworm')
-    const result = await keyworm.search('NAVER_NEWS', '쿠팡', 1)
+    const result = await keyworm.search({
+      platform: 'NAVER_NEWS',
+      keyword: '쿠팡',
+      termDay: 1
+    })
     console.log(result)
 })()
 
@@ -86,18 +101,19 @@ __Example__
 ```
 </br>
 
-## 추후 지원 플랫폼
+### 추후 지원 플랫폼
 
-|**포털사이트**|**컨텐츠**|**지원 유무**|
-|:-------:|:-----:|:-------:|
-| Naver | news | o |
-| Naver | view | x |
-| Naver | cafe | x |
-| Google | news | x |
-| Daum | news | x |
-| Daum | blog | x |
-| Daum | bruch | x |
-
+|**플랫폼**|**지원 유무**|
+|:-------:|:-------:|
+| [NAVER_NEWS](https://search.naver.com/search.naver?where=news&sm=tab_jum&query=apple) | o |
+| [NAVER_VIEW_ALL](https://search.naver.com/search.naver?where=view&sm=tab_jum&query=apple) | x |
+| [NAVER_VIEW_CAFE](https://search.naver.com/search.naver?where=cafe&query=apple&srchby=text) | x |
+| [NAVER_VIEW_BLOG](https://search.naver.com/search.naver?where=blog&query=apple) | x |
+| [GOOGLE_NEWS](https://www.google.com/search?q=apple&tbm=nws) | x |
+| GOOGLE_YOUTUBE | x |
+| META | x |
+| INSTAGRAM | x |
+| TWITTER | x |
 
 ---------------------------------
 

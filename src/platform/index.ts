@@ -11,11 +11,11 @@ export enum PLATFORM_CODE {
 }
 
 export interface PlatformInterface {
-  collect(keyword: string, termDays: number): Promise<Article[]>
+  collect(keyword: string, termDay: number): Promise<Article[]>
 }
 
 export class Platform implements PlatformInterface {
-  async collect(keyword: string, termDays: number) {
+  async collect(keyword: string, termDay: number) {
     return [new Article()]
   }
 }
@@ -26,9 +26,9 @@ export class NaverNews extends Platform {
       -2
     )}${separator}${('00' + args[2].toString()).slice(-2)}`
   }
-  async collect(keyword: string, termDays: number) {
+  async collect(keyword: string, termDay: number) {
     const now = new Date()
-    const yesterday = new Date(new Date().setDate(now.getDate() - termDays))
+    const yesterday = new Date(new Date().setDate(now.getDate() - termDay))
     const dayEnd = [now.getFullYear(), now.getMonth() + 1, now.getDate()]
     const dayStart = [
       yesterday.getFullYear(),
@@ -79,9 +79,9 @@ export class NaverView extends Platform {
       -2
     )}${separator}${('00' + args[2].toString()).slice(-2)}`
   }
-  async collect(keyword: string, termDays: number) {
+  async collect(keyword: string, termDay: number) {
     const now = new Date()
-    const yesterday = new Date(new Date().setDate(now.getDate() - termDays))
+    const yesterday = new Date(new Date().setDate(now.getDate() - termDay))
     const dayEnd = [now.getFullYear(), now.getMonth() + 1, now.getDate()]
     const dayStart = [
       yesterday.getFullYear(),

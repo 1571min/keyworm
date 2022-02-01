@@ -1,7 +1,13 @@
 import { PLATFORM_CODE, Platform, PlatformFactory } from '../platform'
 
 describe('[Unit] Platform', () => {
-  const fakeKeyword = '모두의 주차장'
+  const fakeKeyword = 'test'
+  describe('GOOGLE', () => {
+    it('PlatformFactory generate platform Google', () => {
+      const google = PlatformFactory.generatePlatform(PLATFORM_CODE.GOOGLE)
+      expect(google instanceof Platform).toBe(true)
+    })
+  })
 
   describe('NAVER_NEWS', () => {
     it('PlatformFactory generate platform Naver News', () => {
@@ -22,13 +28,6 @@ describe('[Unit] Platform', () => {
         expect(false).toBe(true)
       }
     }, 60000)
-  })
-
-  describe('GOOGLE', () => {
-    it('PlatformFactory generate platform Google', () => {
-      const google = PlatformFactory.generatePlatform(PLATFORM_CODE.GOOGLE)
-      expect(google instanceof Platform).toBe(true)
-    })
   })
 
   describe('NAVER_VIEW', () => {
