@@ -106,8 +106,8 @@ __Example__
 |**플랫폼**|**지원 유무**|
 |:-------:|:-------:|
 | [NAVER_NEWS](https://search.naver.com/search.naver?where=news&sm=tab_jum&query=apple) | o |
-| [NAVER_VIEW_ALL](https://search.naver.com/search.naver?where=view&sm=tab_jum&query=apple) | x |
-| [NAVER_VIEW_CAFE](https://search.naver.com/search.naver?where=cafe&query=apple&srchby=text) | x |
+| [NAVER_VIEW_ALL](https://search.naver.com/search.naver?where=view&sm=tab_jum&query=apple) | o |
+| [NAVER_VIEW_CAFE](https://search.naver.com/search.naver?where=cafe&query=apple&srchby=text) | o |
 | [NAVER_VIEW_BLOG](https://search.naver.com/search.naver?where=blog&query=apple) | x |
 | [GOOGLE_NEWS](https://www.google.com/search?q=apple&tbm=nws) | x |
 | GOOGLE_YOUTUBE | x |

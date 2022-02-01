@@ -2,10 +2,13 @@ import axios from 'axios'
 import cheerioModule from 'cheerio'
 import qs from 'qs'
 import { Article } from '../article'
+import { last } from 'lodash'
 
 export enum PLATFORM_CODE {
   NAVER_NEWS = 'NAVER_NEWS',
-  NAVER_VIEW = 'NAVER_VIEW',
+  NAVER_VIEW_ALL = 'NAVER_VIEW_ALL',
+  NAVER_VIEW_BLOG = 'NAVER_VIEW_BLOG',
+  NAVER_VIEW_CAFE = 'NAVER_VIEW_CAFE',
   GOOGLE = 'GOOGLE',
   ALL = 'ALL'
 }
@@ -73,7 +76,47 @@ export class NaverNews extends Platform {
   }
 }
 
+const enum NAVER_VIEW_WHERE {
+  VIEW = 'view',
+  CAFE = 'article',
+  BLOG = 'blog'
+}
+
+const enum NAVER_VIEW_URL {
+  VIEW = 'https://s.search.naver.com/p/review/search.naver',
+  CAFE = 'https://s.search.naver.com/p/cafe/search.naver?',
+  BLOG = 'https://s.search.naver.com/p/blog/search.naver'
+}
+
+const enum NAVER_VIEW_TYPE {
+  VIEW = 'VIEW',
+  CAFE = 'CAFE',
+  BLOG = 'BLOG'
+}
+
 export class NaverView extends Platform {
+  private where = NAVER_VIEW_WHERE.VIEW
+  private url = NAVER_VIEW_URL.VIEW
+
+  setWhere(mode: NAVER_VIEW_WHERE) {
+    this.where = mode
+  }
+
+  setUrl(url: NAVER_VIEW_URL) {
+    this.url = url
+  }
+
+  setType(type: NAVER_VIEW_TYPE) {
+    const url = ''
+    switch (type) {
+      case NAVER_VIEW_TYPE.VIEW:
+      case NAVER_VIEW_TYPE.CAFE:
+      case NAVER_VIEW_TYPE.BLOG:
+      default:
+        break
+    }
+  }
+
   createDateFormat(separator = '', ...args: number[]) {
     return `${args[0]}${separator}${('00' + args[1].toString()).slice(
       -2
@@ -89,32 +132,49 @@ export class NaverView extends Platform {
       yesterday.getDate()
     ]
     let resultArticles: Article[] = []
-    const url = `https://search.naver.com/search.naver?${qs.stringify({
-      mode: 'normal',
-      where: 'view',
-      query: `"${keyword}"`,
-      nso: `so:dd,p::from${this.createDateFormat(
-        '',
-        ...dayStart
-      )}to${this.createDateFormat('', ...dayEnd)}`
-    })}`
+    for (let startPage = 1; startPage < 4000; startPage += 30) {
+      const cafeDateOption =
+        this.url === NAVER_VIEW_URL.CAFE
+          ? {
+              st: 'date',
+              date_option: 99,
+              date_from: this.createDateFormat('.', ...dayStart),
+              date_to: this.createDateFormat('.', ...dayEnd)
+            }
+          : {}
+      const url = `${this.url}?${qs.stringify({
+        where: this.where,
+        start: startPage,
+        query: `"${keyword}"`,
+        nso: `so:dd,p:from${this.createDateFormat(
+          '',
+          ...dayStart
+        )}to${this.createDateFormat('', ...dayEnd)}`,
+        ...cafeDateOption
+      })}`
 
-    const rowArticles = await axios.get(url)
-    const $ = cheerioModule.load(rowArticles.data)
-    const collectedArticles: Article[] = []
-    $('.api_txt_lines')
-      .each((i, el) => {
-        const href = $(el).attr('href')
-        if (href) {
-          const article = new Article(PLATFORM_CODE.NAVER_NEWS)
-          article.setContent($(el).text())
-          article.setKeyword(keyword)
-          article.setResource(href)
-          collectedArticles.push(article)
-        }
-      })
-      .toArray()
-    resultArticles = resultArticles.concat(collectedArticles)
+      const rowArticles = await axios.get(url)
+      const $ = cheerioModule.load(rowArticles.data)
+      const collectedArticles: Article[] = []
+      $('.api_txt_lines.total_tit')
+        .each((i, el) => {
+          const href = $(el).attr('href')
+          if (href) {
+            const article = new Article(PLATFORM_CODE.NAVER_NEWS)
+            article.setContent($(el).text())
+            article.setKeyword(keyword)
+            article.setResource(href)
+            collectedArticles.push(article)
+          }
+        })
+        .toArray()
+      if (
+        last(resultArticles)?.hash === last(collectedArticles)?.hash ||
+        collectedArticles.length === 0
+      )
+        break
+      resultArticles = resultArticles.concat(collectedArticles)
+    }
 
     return resultArticles
   }
@@ -128,8 +188,21 @@ export class PlatformFactory {
       return new NaverNews()
     } else if (platformCode === PLATFORM_CODE.GOOGLE) {
       return new Google()
-    } else if (platformCode === PLATFORM_CODE.NAVER_VIEW) {
-      return new NaverView()
+    } else if (platformCode === PLATFORM_CODE.NAVER_VIEW_ALL) {
+      const naverView = new NaverView()
+      naverView.setWhere(NAVER_VIEW_WHERE.VIEW)
+      naverView.setUrl(NAVER_VIEW_URL.VIEW)
+      return naverView
+    } else if (platformCode === PLATFORM_CODE.NAVER_VIEW_BLOG) {
+      const naverView = new NaverView()
+      naverView.setWhere(NAVER_VIEW_WHERE.BLOG)
+      naverView.setUrl(NAVER_VIEW_URL.BLOG)
+      return naverView
+    } else if (platformCode === PLATFORM_CODE.NAVER_VIEW_CAFE) {
+      const naverView = new NaverView()
+      naverView.setWhere(NAVER_VIEW_WHERE.CAFE)
+      naverView.setUrl(NAVER_VIEW_URL.CAFE)
+      return naverView
     } else {
       return undefined
     }
