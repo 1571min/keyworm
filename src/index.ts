@@ -1,21 +1,24 @@
 import { Article } from './article'
-import { PLATFORM_CODE, PlatformFactory } from './platform'
+import { CollectOption, PLATFORM_CODE, PlatformFactory } from './platform'
 
-class SearchOption {
+class SearchOption extends CollectOption {
   platform = PLATFORM_CODE.NAVER_NEWS
-  keyword = ''
-  termDay = 1
 }
 
-export const search = async (
-  searchOption: SearchOption
-): Promise<Article[]> => {
+export const search = async (searchOption: any): Promise<Article[]> => {
+  const option = new SearchOption()
+  option.keyword = searchOption['keyword']
+  option.term = searchOption['term']
+  option.platform = searchOption['platform']
+
   const platform = PlatformFactory.generatePlatform(searchOption.platform)
   if (platform === undefined) {
     throw new Error('지원하지 않는 플랫폼입니다.')
   }
 
-  return await platform.collect(searchOption.keyword, searchOption.termDay)
+  option.validate()
+
+  return await platform.collect(searchOption)
 }
 
 export * from './article'

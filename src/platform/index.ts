@@ -2,7 +2,7 @@ import axios from 'axios'
 import cheerioModule from 'cheerio'
 import qs from 'qs'
 import { Article } from '../article'
-import { last } from 'lodash'
+import { chunk, last } from 'lodash'
 
 export enum PLATFORM_CODE {
   NAVER_NEWS = 'NAVER_NEWS',
@@ -13,12 +13,32 @@ export enum PLATFORM_CODE {
   ALL = 'ALL'
 }
 
+export interface TermInterface {
+  hour: number
+  day: number
+}
+
+export class CollectOption {
+  keyword = ''
+  term: TermInterface = {
+    hour: 0,
+    day: 0
+  }
+  validate(): void {
+    if (this.keyword.length == 0) throw new Error('keyword is not exist')
+    if (this.term == null) throw new Error('term is not exist')
+    if (this.term.hour == 0 && this.term.day == 0)
+      throw new Error('term option is not set')
+    if (this.term.hour > 0) throw new Error('hour type is not support')
+  }
+}
+
 export interface PlatformInterface {
-  collect(keyword: string, termDay: number): Promise<Article[]>
+  collect(collectOption: CollectOption): Promise<Article[]>
 }
 
 export class Platform implements PlatformInterface {
-  async collect(keyword: string, termDay: number) {
+  async collect(collectOption: CollectOption) {
     return [new Article()]
   }
 }
@@ -29,9 +49,11 @@ export class NaverNews extends Platform {
       -2
     )}${separator}${('00' + args[2].toString()).slice(-2)}`
   }
-  async collect(keyword: string, termDay: number) {
+  async collect(collectOption: CollectOption) {
     const now = new Date()
-    const yesterday = new Date(new Date().setDate(now.getDate() - termDay))
+    const yesterday = new Date(
+      new Date().setDate(now.getDate() - collectOption.term.day)
+    )
     const dayEnd = [now.getFullYear(), now.getMonth() + 1, now.getDate()]
     const dayStart = [
       yesterday.getFullYear(),
@@ -39,37 +61,54 @@ export class NaverNews extends Platform {
       yesterday.getDate()
     ]
     let resultArticles: Article[] = []
-    for (let startPage = 1; startPage < 4000; startPage += 10) {
-      const url = `https://search.naver.com/search.naver?${qs.stringify({
-        de: this.createDateFormat('.', ...dayEnd),
-        ds: this.createDateFormat('.', ...dayStart),
-        where: 'news',
-        query: `"${keyword}"`,
-        nso: `so:r,p:from${this.createDateFormat(
-          '',
-          ...dayStart
-        )}to${this.createDateFormat('', ...dayEnd)}`,
-        sm: 'tab_opt',
-        sort: 0,
-        field: 0,
-        start: startPage,
-        pd: 3
-      })}`
+    const parallelsCount = 20
+    const chuckedPageList: number[][] = chunk(
+      Array(400)
+        .fill(1)
+        .map((a, i) => a + 10 * i),
+      parallelsCount
+    )
 
-      const rowArticles = await axios.get(url)
-      const $ = cheerioModule.load(rowArticles.data)
-      const collectedArticles: Article[] = []
-      $('.news_tit')
-        .each((i, el) => {
-          const article = new Article(PLATFORM_CODE.NAVER_NEWS)
-          article.setContent($(el).text())
-          article.setKeyword(keyword)
-          article.setResource($(el).attr('href') ?? '')
-          collectedArticles.push(article)
-        })
-        .toArray()
-      resultArticles = resultArticles.concat(collectedArticles)
-      if (collectedArticles.length <= 1) break
+    for (const pageList of chuckedPageList) {
+      const result = await Promise.allSettled(
+        pageList.map(page =>
+          axios
+            .get(
+              `https://search.naver.com/search.naver?${qs.stringify({
+                de: this.createDateFormat('.', ...dayEnd),
+                ds: this.createDateFormat('.', ...dayStart),
+                where: 'news',
+                query: `"${collectOption.keyword}"`,
+                nso: `so:r,p:from${this.createDateFormat(
+                  '',
+                  ...dayStart
+                )}to${this.createDateFormat('', ...dayEnd)}`,
+                sm: 'tab_opt',
+                sort: 0,
+                field: 0,
+                start: page,
+                pd: 3
+              })}`
+            )
+            .then(row => {
+              const $ = cheerioModule.load(row.data)
+              const collectedArticles: Article[] = []
+              $('.news_tit')
+                .each((i, el) => {
+                  const article = new Article(PLATFORM_CODE.NAVER_NEWS)
+                  article.setContent($(el).text())
+                  article.setKeyword(collectOption.keyword)
+                  article.setResource($(el).attr('href') ?? '')
+                  collectedArticles.push(article)
+                })
+                .toArray()
+              if (collectedArticles.length <= 1)
+                throw new Error('검색 결과 없음')
+              resultArticles = resultArticles.concat(collectedArticles)
+            })
+        )
+      )
+      if (result.find(r => r.status === 'rejected')) break
     }
 
     return resultArticles
@@ -122,9 +161,11 @@ export class NaverView extends Platform {
       -2
     )}${separator}${('00' + args[2].toString()).slice(-2)}`
   }
-  async collect(keyword: string, termDay: number) {
+  async collect(collectOption: CollectOption) {
     const now = new Date()
-    const yesterday = new Date(new Date().setDate(now.getDate() - termDay))
+    const yesterday = new Date(
+      new Date().setDate(now.getDate() - collectOption.term.day)
+    )
     const dayEnd = [now.getFullYear(), now.getMonth() + 1, now.getDate()]
     const dayStart = [
       yesterday.getFullYear(),
@@ -132,48 +173,63 @@ export class NaverView extends Platform {
       yesterday.getDate()
     ]
     let resultArticles: Article[] = []
-    for (let startPage = 1; startPage < 4000; startPage += 30) {
-      const cafeDateOption =
-        this.url === NAVER_VIEW_URL.CAFE
-          ? {
-              st: 'date',
-              date_option: 99,
-              date_from: this.createDateFormat('.', ...dayStart),
-              date_to: this.createDateFormat('.', ...dayEnd)
-            }
-          : {}
-      const url = `${this.url}?${qs.stringify({
-        where: this.where,
-        start: startPage,
-        query: `"${keyword}"`,
-        nso: `so:dd,p:from${this.createDateFormat(
-          '',
-          ...dayStart
-        )}to${this.createDateFormat('', ...dayEnd)}`,
-        ...cafeDateOption
-      })}`
-
-      const rowArticles = await axios.get(url)
-      const $ = cheerioModule.load(rowArticles.data)
-      const collectedArticles: Article[] = []
-      $('.api_txt_lines.total_tit')
-        .each((i, el) => {
-          const href = $(el).attr('href')
-          if (href) {
-            const article = new Article(PLATFORM_CODE.NAVER_NEWS)
-            article.setContent($(el).text())
-            article.setKeyword(keyword)
-            article.setResource(href)
-            collectedArticles.push(article)
+    const parallelsCount = 20
+    const chuckedPageList: number[][] = chunk(
+      Array(400)
+        .fill(1)
+        .map((a, i) => a + 10 * i),
+      parallelsCount
+    )
+    const cafeDateOption =
+      this.url === NAVER_VIEW_URL.CAFE
+        ? {
+            st: 'date',
+            date_option: 99,
+            date_from: this.createDateFormat('.', ...dayStart),
+            date_to: this.createDateFormat('.', ...dayEnd)
           }
-        })
-        .toArray()
-      if (
-        last(resultArticles)?.hash === last(collectedArticles)?.hash ||
-        collectedArticles.length === 0
+        : {}
+    for (const pageList of chuckedPageList) {
+      const result = await Promise.allSettled(
+        pageList.map(page =>
+          axios
+            .get(
+              `${this.url}?${qs.stringify({
+                where: this.where,
+                start: page,
+                query: `"${collectOption.keyword}"`,
+                nso: `so:dd,p:from${this.createDateFormat(
+                  '',
+                  ...dayStart
+                )}to${this.createDateFormat('', ...dayEnd)}`,
+                ...cafeDateOption
+              })}`
+            )
+            .then(raw => {
+              const $ = cheerioModule.load(raw.data)
+              const collectedArticles: Article[] = []
+              $('.api_txt_lines.total_tit')
+                .each((i, el) => {
+                  const href = $(el).attr('href')
+                  if (href) {
+                    const article = new Article(PLATFORM_CODE.NAVER_NEWS)
+                    article.setContent($(el).text())
+                    article.setKeyword(collectOption.keyword)
+                    article.setResource(href)
+                    collectedArticles.push(article)
+                  }
+                })
+                .toArray()
+              if (
+                last(resultArticles)?.hash === last(collectedArticles)?.hash ||
+                collectedArticles.length === 0
+              )
+                throw new Error('검색 결과 없음')
+              resultArticles = resultArticles.concat(collectedArticles)
+            })
+        )
       )
-        break
-      resultArticles = resultArticles.concat(collectedArticles)
+      if (result.find(r => r.status === 'rejected')) break
     }
 
     return resultArticles

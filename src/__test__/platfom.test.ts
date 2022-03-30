@@ -1,7 +1,17 @@
-import { PLATFORM_CODE, Platform, PlatformFactory } from '../platform'
+import {
+  PLATFORM_CODE,
+  Platform,
+  PlatformFactory,
+  CollectOption
+} from '../platform'
 
 describe('[Unit] Platform', () => {
-  const fakeKeyword = '삼성전자'
+  const collectOption = new CollectOption()
+  collectOption.term = {
+    hour: 0,
+    day: 10
+  }
+  collectOption.keyword = '삼성전자'
   describe('GOOGLE', () => {
     it('PlatformFactory generate platform Google', () => {
       const google = PlatformFactory.generatePlatform(PLATFORM_CODE.GOOGLE)
@@ -22,7 +32,7 @@ describe('[Unit] Platform', () => {
         PLATFORM_CODE.NAVER_NEWS
       )
       if (naverNews instanceof Platform) {
-        const articles = await naverNews.collect(fakeKeyword, 10)
+        const articles = await naverNews.collect(collectOption)
         expect(articles.length).toBeGreaterThanOrEqual(1)
       } else {
         expect(false).toBe(true)
@@ -43,7 +53,7 @@ describe('[Unit] Platform', () => {
         PLATFORM_CODE.NAVER_VIEW_ALL
       )
       if (naverView instanceof Platform) {
-        const articles = await naverView.collect(fakeKeyword, 10)
+        const articles = await naverView.collect(collectOption)
         expect(articles.length).toBeGreaterThanOrEqual(1)
       } else {
         expect(false).toBe(true)
@@ -62,7 +72,7 @@ describe('[Unit] Platform', () => {
         PLATFORM_CODE.NAVER_VIEW_CAFE
       )
       if (naverView instanceof Platform) {
-        const articles = await naverView.collect(fakeKeyword, 10)
+        const articles = await naverView.collect(collectOption)
         expect(articles.length).toBeGreaterThanOrEqual(1)
       } else {
         expect(false).toBe(true)
@@ -81,7 +91,7 @@ describe('[Unit] Platform', () => {
         PLATFORM_CODE.NAVER_VIEW_BLOG
       )
       if (naverView instanceof Platform) {
-        const articles = await naverView.collect(fakeKeyword, 10)
+        const articles = await naverView.collect(collectOption)
         expect(articles.length).toBeGreaterThanOrEqual(1)
       } else {
         expect(false).toBe(true)
