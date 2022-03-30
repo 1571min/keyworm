@@ -22,11 +22,10 @@ export class CollectOption {
   keyword = ''
   term: TermInterface = {
     hour: 0,
-    day: 0
+    day: 1
   }
   validate(): void {
     if (this.keyword.length == 0) throw new Error('keyword is not exist')
-    if (this.term == null) throw new Error('term is not exist')
     if (this.term.hour == 0 && this.term.day == 0)
       throw new Error('term option is not set')
     if (this.term.hour > 0) throw new Error('hour type is not support')

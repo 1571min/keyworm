@@ -8,7 +8,10 @@ class SearchOption extends CollectOption {
 export const search = async (searchOption: any): Promise<Article[]> => {
   const option = new SearchOption()
   option.keyword = searchOption['keyword']
-  option.term = searchOption['term']
+  option.term = searchOption['term'] ?? {
+    hour: 0,
+    day: 1
+  }
   option.platform = searchOption['platform']
 
   const platform = PlatformFactory.generatePlatform(searchOption.platform)
@@ -18,7 +21,7 @@ export const search = async (searchOption: any): Promise<Article[]> => {
 
   option.validate()
 
-  return await platform.collect(searchOption)
+  return await platform.collect(option)
 }
 
 export * from './article'

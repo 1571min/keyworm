@@ -8,7 +8,10 @@ const keyworm = require('keyworm')
 const articles = await keyworm.search({ 
   platform: 'NAVER_NEWS',
   keyword: '쿠팡',
-  termDay: 1 
+  term : {
+    hour: 0,
+    day: 1
+  }
 })
 
 // => using articles
@@ -55,13 +58,17 @@ const keyworm = require('keyworm')
 `search option`
 ```js
 {
-  platform : 'NAVER_NEWS', // default
+  //required
+  platform : 'NAVER_NEWS',
   
-  // 컨텐츠를 수집 할 때 사용하는 검색어를 의미합니다.
-  keyword : '쿠팡',
-  
-  // 컨텐츠 작성 기간에 대한 옵셥입니다
-  termDay : 1 // default
+  //required
+  keyword : '쿠팡',   // 컨텐츠를 수집 할 때 사용하는 검색어를 의미합니다.
+    
+  //optional default day=1  
+  term : {           // 컨텐츠 작성 기간에 대한 옵셥입니다
+    hour: 0,          // 시간 설정 추후 지원 예정
+    day: 1
+  }
 }
 ```
 
@@ -75,8 +82,10 @@ __Example__
     const result = await keyworm.search({
       platform: 'NAVER_NEWS',
       keyword: '쿠팡',
-      termDay: 1
-    })
+      term: {
+        hour: 0,
+        day: 1
+      })
     console.log(result)
 })()
 
