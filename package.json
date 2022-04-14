@@ -1,6 +1,6 @@
 {
   "name": "keyworm",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "keyword mention 크롤러",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

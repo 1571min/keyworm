@@ -1,5 +1,5 @@
 import { search } from '..'
-import { PLATFORM_CODE } from '../platform'
+import { PLATFORM_CODE } from '../enums'
 
 describe('search', () => {
   it('NAVER_NEWS', async () => {

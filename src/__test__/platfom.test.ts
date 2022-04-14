@@ -1,9 +1,6 @@
-import {
-  PLATFORM_CODE,
-  Platform,
-  PlatformFactory,
-  CollectOption
-} from '../platform'
+import { Platform, CollectOption } from '../platform'
+import { PLATFORM_CODE } from '../enums'
+import { PlatformFactory } from '../../src'
 
 describe('[Unit] Platform', () => {
   const collectOption = new CollectOption()

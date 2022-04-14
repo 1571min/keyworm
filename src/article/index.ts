@@ -1,5 +1,5 @@
 import md5 from 'md5'
-import { PLATFORM_CODE } from '../platform'
+import { PLATFORM_CODE } from '../enums'
 
 export interface ResourceInterface {
   url: string
