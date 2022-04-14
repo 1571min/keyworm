@@ -9,9 +9,9 @@ describe('[Unit] Platform', () => {
   const collectOption = new CollectOption()
   collectOption.term = {
     hour: 0,
-    day: 10
+    day: 1
   }
-  collectOption.keyword = '삼성전자'
+  collectOption.keyword = 'test'
   describe('GOOGLE', () => {
     it('PlatformFactory generate platform Google', () => {
       const google = PlatformFactory.generatePlatform(PLATFORM_CODE.GOOGLE)

@@ -1,27 +1,39 @@
 import { Article } from './article'
-import { CollectOption, PLATFORM_CODE, PlatformFactory } from './platform'
+import {
+  CollectOption,
+  PLATFORM_CODE,
+  PlatformFactory,
+  TermInterface
+} from './platform'
+import { plainToInstance } from 'class-transformer'
 
-class SearchOption extends CollectOption {
+export class CollectOptionDto extends CollectOption {
   platform = PLATFORM_CODE.NAVER_NEWS
-}
-
-export const search = async (searchOption: any): Promise<Article[]> => {
-  const option = new SearchOption()
-  option.keyword = searchOption['keyword']
-  option.term = searchOption['term'] ?? {
+  term = {
     hour: 0,
     day: 1
   }
-  option.platform = searchOption['platform']
+}
 
-  const platform = PlatformFactory.generatePlatform(searchOption.platform)
+export interface SearchOptionInterface {
+  keyword: string
+  term?: TermInterface
+  platform?: PLATFORM_CODE
+}
+
+export const search = async (
+  searchOption: SearchOptionInterface
+): Promise<Article[]> => {
+  const collectOptionDto = plainToInstance(CollectOptionDto, searchOption)
+
+  const platform = PlatformFactory.generatePlatform(collectOptionDto.platform)
   if (platform === undefined) {
     throw new Error('지원하지 않는 플랫폼입니다.')
   }
 
-  option.validate()
+  collectOptionDto.validate()
 
-  return await platform.collect(option)
+  return await platform.collect(collectOptionDto)
 }
 
 export * from './article'

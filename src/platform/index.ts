@@ -93,7 +93,7 @@ export class NaverNews extends Platform {
               const $ = cheerioModule.load(row.data)
               const collectedArticles: Article[] = []
               $('.news_tit')
-                .each((i, el) => {
+                .each((i: any, el: any) => {
                   const article = new Article(PLATFORM_CODE.NAVER_NEWS)
                   article.setContent($(el).text())
                   article.setKeyword(collectOption.keyword)
@@ -208,7 +208,7 @@ export class NaverView extends Platform {
               const $ = cheerioModule.load(raw.data)
               const collectedArticles: Article[] = []
               $('.api_txt_lines.total_tit')
-                .each((i, el) => {
+                .each((i: any, el: any) => {
                   const href = $(el).attr('href')
                   if (href) {
                     const article = new Article(PLATFORM_CODE.NAVER_NEWS)
