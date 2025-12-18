@@ -16,13 +16,15 @@ export interface HashInterface {
   content: string
 }
 
-const getHash = (obj: any) => {
-  const cpy = JSON.parse(JSON.stringify(obj))
+type Hashable = ResourceInterface | ContentInterface | Article
+
+const getHash = <T extends Hashable>(obj: T): string => {
+  const cpy = JSON.parse(JSON.stringify(obj)) as Record<string, unknown>
   delete cpy.hash
   try {
     const js = JSON.stringify(cpy)
     return md5(js)
-  } catch (e) {
+  } catch {
     return ''
   }
 }
