@@ -5,32 +5,30 @@ import qs from 'qs'
 import cheerioModule from 'cheerio'
 import { CollectOption, Platform } from './index'
 import { NAVER_VIEW_URL, NAVER_VIEW_WHERE, PLATFORM_CODE } from '../enums'
+import { createDateFormat, CRAWL_CONFIG } from '../utils'
 
 export class NaverNews extends Platform {
-  createDateFormat(separator = '', ...args: number[]) {
-    return `${args[0]}${separator}${('00' + args[1].toString()).slice(
-      -2
-    )}${separator}${('00' + args[2].toString()).slice(-2)}`
-  }
-
   async collect(collectOption: CollectOption) {
     const now = new Date()
     const yesterday = new Date(
       new Date().setDate(now.getDate() - collectOption.term.day)
     )
-    const dayEnd = [now.getFullYear(), now.getMonth() + 1, now.getDate()]
-    const dayStart = [
+    const dayEnd: [number, number, number] = [
+      now.getFullYear(),
+      now.getMonth() + 1,
+      now.getDate()
+    ]
+    const dayStart: [number, number, number] = [
       yesterday.getFullYear(),
       yesterday.getMonth() + 1,
       yesterday.getDate()
     ]
     let resultArticles: Article[] = []
-    const parallelsCount = 20
     const chuckedPageList: number[][] = chunk(
-      Array(400)
+      Array(CRAWL_CONFIG.MAX_PAGES)
         .fill(1)
-        .map((a, i) => a + 10 * i),
-      parallelsCount
+        .map((a, i) => a + CRAWL_CONFIG.RESULTS_PER_PAGE * i),
+      CRAWL_CONFIG.PARALLEL_COUNT
     )
 
     for (const pageList of chuckedPageList) {
@@ -39,14 +37,14 @@ export class NaverNews extends Platform {
           axios
             .get(
               `https://search.naver.com/search.naver?${qs.stringify({
-                de: this.createDateFormat('.', ...dayEnd),
-                ds: this.createDateFormat('.', ...dayStart),
+                de: createDateFormat('.', ...dayEnd),
+                ds: createDateFormat('.', ...dayStart),
                 where: 'news',
                 query: `"${collectOption.keyword}"`,
-                nso: `so:r,p:from${this.createDateFormat(
+                nso: `so:r,p:from${createDateFormat(
                   '',
                   ...dayStart
-                )}to${this.createDateFormat('', ...dayEnd)}`,
+                )}to${createDateFormat('', ...dayEnd)}`,
                 sm: 'tab_opt',
                 sort: 0,
                 field: 0,
@@ -58,7 +56,7 @@ export class NaverNews extends Platform {
               const $ = cheerioModule.load(row.data)
               const collectedArticles: Article[] = []
               $('.news_tit')
-                .each((i: any, el: any) => {
+                .each((i, el) => {
                   const article = new Article(PLATFORM_CODE.NAVER_NEWS)
                   article.setContent($(el).text())
                   article.setKeyword(collectOption.keyword)
@@ -96,31 +94,28 @@ export class NaverView extends Platform {
     this.code = code
   }
 
-  createDateFormat(separator = '', ...args: number[]) {
-    return `${args[0]}${separator}${('00' + args[1].toString()).slice(
-      -2
-    )}${separator}${('00' + args[2].toString()).slice(-2)}`
-  }
-
   async collect(collectOption: CollectOption) {
     const now = new Date()
     const yesterday = new Date(
       new Date().setDate(now.getDate() - collectOption.term.day)
     )
-    const dayEnd = [now.getFullYear(), now.getMonth() + 1, now.getDate()]
-    const dayStart = [
+    const dayEnd: [number, number, number] = [
+      now.getFullYear(),
+      now.getMonth() + 1,
+      now.getDate()
+    ]
+    const dayStart: [number, number, number] = [
       yesterday.getFullYear(),
       yesterday.getMonth() + 1,
       yesterday.getDate()
     ]
 
     let resultArticles: Article[] = []
-    const parallelsCount = 20
     const chuckedPageList: number[][] = chunk(
-      Array(400)
+      Array(CRAWL_CONFIG.MAX_PAGES)
         .fill(1)
-        .map((a, i) => a + 10 * i),
-      parallelsCount
+        .map((a, i) => a + CRAWL_CONFIG.RESULTS_PER_PAGE * i),
+      CRAWL_CONFIG.PARALLEL_COUNT
     )
 
     const cafeDateOption =
@@ -128,8 +123,8 @@ export class NaverView extends Platform {
         ? {
             st: 'date',
             date_option: 99,
-            date_from: this.createDateFormat('.', ...dayStart),
-            date_to: this.createDateFormat('.', ...dayEnd)
+            date_from: createDateFormat('.', ...dayStart),
+            date_to: createDateFormat('.', ...dayEnd)
           }
         : {}
     for (const pageList of chuckedPageList) {
@@ -141,10 +136,10 @@ export class NaverView extends Platform {
                 where: this.where,
                 start: page,
                 query: `"${collectOption.keyword}"`,
-                nso: `so:dd,p:from${this.createDateFormat(
+                nso: `so:dd,p:from${createDateFormat(
                   '',
                   ...dayStart
-                )}to${this.createDateFormat('', ...dayEnd)}`,
+                )}to${createDateFormat('', ...dayEnd)}`,
                 ...cafeDateOption
               })}`
             )
@@ -152,7 +147,7 @@ export class NaverView extends Platform {
               const $ = cheerioModule.load(raw.data)
               const collectedArticles: Article[] = []
               $('.api_txt_lines.total_tit')
-                .each((i: any, el: any) => {
+                .each((i, el) => {
                   const href = $(el).attr('href')
                   if (href) {
                     const article = new Article(this.code)

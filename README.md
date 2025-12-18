@@ -24,8 +24,8 @@ const article = {
   // article 객체 hash
   hash: 'a13b3c3fceae23afcdbd98c2fa862817'
 
-  // 수집한 플랫폼 
-  palaformCode: 'NAVER_NEWS',
+  // 수집한 플랫폼
+  platformCode: 'NAVER_NEWS',
 
   // 수집한 article의 키워드
   keyword: '삼성전자',
